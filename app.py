@@ -1,37 +1,42 @@
-import pickle
-from flask import Flask, render_template, request, redirect, url_for, session
-import requests
-import datetime
+from flask import Flask, render_template, request, redirect, session
 import boto3
-table1 = ['user','user1']
+
 app = Flask(__name__)
+app.secret_key = 'Gojo@Topi31'
 
-@app.route("/")
-def intro():
-    return render_template("myworld.html")
-@app.route("/loguser", methods = ['GET'])
+# Connect to DynamoDB
+dynamodb = boto3.resource('dynamodb', region_name='your_region')
+table = dynamodb.Table('your_table_name')
+# Routes
+@app.route('/')
+def index():
+    return render_template('login.html')
+
+@app.route('/login', methods=['POST'])
 def login():
-    return render_template("loguser.html")
-#@app.route("/logout")
-#def logout():
+    username = request.form['username']
+    password = request.form['password']
 
-#@app.route("/employee")
-#def employee():
-    
-@app.route("/user", methods=['POST'])
-def user():
-    name1 = request.form('username')
-    pass1 = request.form('password')
-    if name1 == table1[0] and pass1 == table1[1]:
-        session['logged_in'] = True 
-        session['Username'] = name1
-        return render_template("user.html")
+    # Check if user exists and password matches
+    response = table.get_item(Key={'username': username})
+    if 'Item' in response:
+        user_data = response['Item']
+        if user_data['password'] == password:
+            session['username'] = username
+            return redirect('/dashboard') 
+    return 'Invalid username or password'
+
+@app.route('/dashboard')
+def dashboard():
+    if 'username' in session:
+        return 'Welcome, ' + session['username'] + '!'
     else:
-        return "Invalid username or password"
+        return redirect('/')
 
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect('/')
 
-
-
-
-
-
+if __name__ == '__main__':
+    app.run(debug=True)
