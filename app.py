@@ -3,38 +3,31 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import requests
 import datetime
 import boto3
+table1 = ['user','user1']
 app = Flask(__name__)
 
 @app.route("/")
 def intro():
     return render_template("myworld.html")
-@app.route("/loguser", methods = ['GET', 'POST'])
+@app.route("/loguser", methods = ['GET'])
 def login():
-    if request.method == 'GET':
-        return render_template("myworld.html")
-    elif request.method == 'POST':
-        name1 = request.form('username')
-        pass1 = request.form('password')
-        response = table.get_item(Key={'username': username})
-        if 'Item' not in response:
-            return "Invalid username or password"
-        hashed_password = response['Item']['password']
-        if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
-            return render_template("user.html")
-        else:
-            return "Invalid username or password"
-
+    return render_template("loguser.html")
 #@app.route("/logout")
 #def logout():
 
-#@app.route("/main")
-#def main():
-
 #@app.route("/employee")
 #def employee():
-
-#@app.route("/user")
-#def user():
+    
+@app.route("/user", methods=['POST'])
+def user():
+    name1 = request.form('username')
+    pass1 = request.form('password')
+    if name1 == table1[0] and pass1 == table1[1]:
+        session['logged_in'] = True 
+        session['Username'] = name1
+        return render_template("user.html")
+    else:
+        return "Invalid username or password"
 
 
 

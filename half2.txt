@@ -1,0 +1,10 @@
+response = table.get_item(Key={'username': username})
+        if 'Item' not in response:
+            return "Invalid username or password"
+        hashed_password = response['Item']['password']
+        if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
+            session['logged_in'] = True 
+            session['Username'] = name1
+            return render_template(url_for('main'))
+        else:
+            return "Invalid username or password"
