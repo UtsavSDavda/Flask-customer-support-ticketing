@@ -4,9 +4,9 @@ import pymysql.cursors
 app = Flask(__name__)
 
 # RDS configuration
-rds_host = 'flask-cs.cdc4ya0a6v85.ap-southeast-2.rds.amazonaws.com'
+rds_host = ''
 username = 'admin'
-password = 'sBb9BByydbcV5aAYdU4y'
+password = ''
 db_name = 'your-database-name'
 
 # Connect to the database
@@ -32,7 +32,7 @@ def user_login():
         password = request.form['password']
         
         # Check credentials
-        cursor = conn.cursor()
+        cursor = connection.cursor()
         cursor.execute('SELECT * FROM users WHERE username=%s AND password=%s', (username, password))
         user = cursor.fetchone()
         cursor.close()
